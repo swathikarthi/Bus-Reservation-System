@@ -1,0 +1,365 @@
+import java.util.Scanner;
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("----------------------------------------");
+        System.out.println("BUS RESERVATION SYSTEM");
+        System.out.println("----------------------------------------");
+        
+        BusTicketBookingSystem bookingSystem = new BusTicketBookingSystem();
+        bookingSystem.start();
+    }
+}
+
+class User {
+    private String username;
+    private String password;
+
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+}
+
+class BusRoute {
+    private String routeNumber;
+    private String origin;
+    private String destination;
+    private String departureTime;
+    private String arrivalTime;
+    private String seatType;
+    private double ticketPrice;
+
+    public BusRoute(String routeNumber, String origin, String destination, String departureTime, String arrivalTime, String seatType, double ticketPrice) {
+        this.routeNumber = routeNumber;
+        this.origin = origin;
+        this.destination = destination;
+        this.departureTime = departureTime;
+        this.arrivalTime = arrivalTime;
+        this.seatType = seatType;
+        this.ticketPrice = ticketPrice;
+    }
+
+    public String getRouteNumber() {
+        return routeNumber;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public String getDestination() {
+        return destination;
+    }
+
+    public String getDepartureTime() {
+        return departureTime;
+    }
+
+    public String getArrivalTime() {
+        return arrivalTime;
+    }
+
+    public String getSeatType() {
+        return seatType;
+    }
+
+    public double getTicketPrice() {
+        return ticketPrice;
+    }
+}
+
+class Booking {
+    private String passengerName;
+    private int passengerAge;
+    private String dateOfJourney;
+    private BusRoute busRoute;
+
+    public Booking(String passengerName, int passengerAge, String dateOfJourney, BusRoute busRoute) {
+        this.passengerName = passengerName;
+        this.passengerAge = passengerAge;
+        this.dateOfJourney = dateOfJourney;
+        this.busRoute = busRoute;
+    }
+
+    public String getPassengerName() {
+        return passengerName;
+    }
+
+    public int getPassengerAge() {
+        return passengerAge;
+    }
+
+    public String getDateOfJourney() {
+        return dateOfJourney;
+    }
+
+    public BusRoute getBusRoute() {
+        return busRoute;
+    }
+}
+
+class BusTicketBookingSystem {
+    private static final int MAX_USERS = 10;
+    private User[] users = new User[MAX_USERS];
+    private int numUsers = 0;
+    private BusRoute[] busRoutes = {
+            new BusRoute("TN123", "Chennai", "Madurai", "10:00 AM", "5:00 PM", "Seater", 500),
+            new BusRoute("KA456", "Coimbatore", "Bangalore", "11:00 AM", "6:00 PM", "Seater", 600),
+            new BusRoute("TN789", "Chennai", "Trichy", "9:00 AM", "3:00 PM", "Seater", 400),
+            new BusRoute("KA012", "Trichy", "Bangalore", "10:30 AM", "5:30 PM", "Seater", 550),
+            new BusRoute("TN345", "Rajapalayam", "Chennai", "8:30 AM", "4:30 PM", "Seater", 450),
+            new BusRoute("TN678", "Madurai", "Kumbakonam", "10:15 AM", "4:15 PM", "Seater", 550),
+            new BusRoute("KA456", "Madurai", "Bangalore", "11:00 PM", "10:00 AM", "Sleeper", 800),
+            new BusRoute("TN789", "Chennai", "Coimbatore", "9:00 AM", "3:00 PM", "Sleeper", 600),
+            new BusRoute("KA012", "Chennai", "Bangalore", "11:30 AM", "3:30 PM", "Sleeper", 850),
+            new BusRoute("TN345", "Rajapalayam", "Trichy", "8:30 AM", "4:30 PM", "Sleeper", 700),
+            new BusRoute("TN678", "Tenkasi", "Kumbakonam", "10:23 AM", "4:17 PM", "Sleeper", 650)
+    };
+    private Booking[] bookings = new Booking[MAX_USERS * 4];
+    private String[] travelNames = {
+            "National Travels",
+            "KPM Travels",
+            "SRS Travels",
+            "Vetri Travels",
+            "Parveen Travels",
+            "Smart line Travels",
+            "Intercity SmartBus"
+    };
+
+    public void start() {
+        Scanner scanner = new Scanner(System.in);
+        boolean loggedIn = false;
+
+        while (!loggedIn) {
+            System.out.println("----------------------------------------");
+            System.out.println("Choose an option:");
+            System.out.println("----------------------------------------");
+            System.out.println("1. Login");
+            System.out.println("2. Register");
+            System.out.println("3. Exit");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine(); 
+
+            switch (choice) {
+                case 1:
+                    loggedIn = login(scanner);
+                    break;
+                case 2:
+                    register(scanner);
+                    break;
+                case 3:
+                    System.out.println("----------------------------------------");
+                    System.out.println("Exiting...");
+                    System.out.println("----------------------------------------");
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+                    break;
+            }
+        }
+
+        System.out.println("Logged in successfully.");
+        while (true) {
+            System.out.println("----------------------------------------");
+            System.out.println("Choose an option:");
+            System.out.println("----------------------------------------");
+            System.out.println("1. Book a ticket");
+            System.out.println("2. View booked tickets");
+            System.out.println("3. Cancel a ticket");
+            System.out.println("4. Exit");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine(); 
+
+            switch (choice) {
+                case 1:
+                    bookTickets(scanner);
+                    break;
+                case 2:
+                    viewBookedTickets();
+                    break;
+                case 3:
+                    cancelTicket(scanner);
+                    break;
+                case 4:
+                    System.out.println("----------------------------------------");
+                    System.out.println("Exiting...");
+                    System.out.println("----------------------------------------");
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+                    break;
+            }
+        }
+    }
+
+    
+
+    private void register(Scanner scanner) {
+        if (numUsers >= MAX_USERS) {
+            System.out.println("Maximum number of users reached. Cannot register more users.");
+            return;
+        }
+
+        System.out.println("Enter username:");
+        String username = scanner.nextLine();
+        System.out.println("Enter password:");
+        String password = scanner.nextLine();
+
+        users[numUsers] = new User(username, password);
+        numUsers++;
+
+        System.out.println("User registered successfully.");
+    }
+    private boolean login(Scanner scanner) {
+        System.out.println("Enter username:");
+        String username = scanner.nextLine();
+        System.out.println("Enter password:");
+        String password = scanner.nextLine();
+
+        for (int i = 0; i < numUsers; i++) {
+            if (users[i].getUsername().equals(username) && users[i].getPassword().equals(password)) {
+                return true;
+            }
+        }
+
+        System.out.println("Invalid username or password. Please try again.");
+        return false;
+    }
+
+    private void bookTickets(Scanner scanner) {
+    boolean continueBooking = true;
+    while (continueBooking) {
+        System.out.println("----------------------------------------");
+        System.out.println("Choose a bus route:");
+        System.out.println("----------------------------------------");
+
+        for (int i = 0; i < busRoutes.length; i++) {
+            BusRoute route = busRoutes[i];
+            System.out.println((i + 1) + ". " + route.getOrigin() + " to " + route.getDestination());
+        }
+
+        int routeChoice = scanner.nextInt();
+        scanner.nextLine();
+
+        if (routeChoice < 1 || routeChoice > busRoutes.length) {
+            System.out.println("Invalid choice.");
+            continue;
+        }
+
+        BusRoute selectedRoute = busRoutes[routeChoice - 1];
+        System.out.println("----------------------------------------");
+        System.out.println("Select a travel name:");
+        System.out.println("----------------------------------------");
+        for (int i = 0; i < travelNames.length; i++) {
+            System.out.println((i + 1) + ". " + travelNames[i]);
+        }
+
+        int travelChoice = scanner.nextInt();
+        scanner.nextLine();
+        System.out.println("----------------------------------------");
+        System.out.println("Choose seat type:");
+        System.out.println("----------------------------------------");
+        System.out.println("1. Seater");
+        System.out.println("2. Sleeper");
+
+        int seatChoice = scanner.nextInt();
+        scanner.nextLine(); 
+        System.out.println("----------------------------------------");
+        System.out.println("Confirm booking for the following details:");
+        System.out.println("----------------------------------------");
+        System.out.println("Bus Route: " + selectedRoute.getOrigin() + " to " + selectedRoute.getDestination());
+        System.out.println("Travel Name: " + travelNames[travelChoice - 1]);
+        System.out.println("Seat Type: " + (seatChoice == 1 ? "Seater" : "Sleeper"));
+        System.out.println("Ticket Price: " + selectedRoute.getTicketPrice());
+
+        System.out.println("Enter 'Y' to confirm booking or any other key to cancel:");
+        String confirmChoice = scanner.nextLine();
+
+        if (!confirmChoice.equalsIgnoreCase("Y")) {
+            System.out.println("Booking canceled.");
+            continue;
+        }
+
+        System.out.println("Enter date of journey:");
+        String dateOfJourney = scanner.nextLine();
+        System.out.println("Enter number of passengers:");
+        int numPassengers = scanner.nextInt();
+        scanner.nextLine(); 
+
+        double totalAmount = selectedRoute.getTicketPrice() * numPassengers;
+
+        for (int i = 0; i < numPassengers; i++) {
+            System.out.println("Enter passenger " + (i + 1) + " name:");
+            String name = scanner.nextLine();
+            System.out.println("Enter passenger " + (i + 1) + " age:");
+            int age = scanner.nextInt();
+            scanner.nextLine();
+
+            bookings[numUsers] = new Booking(name, age, dateOfJourney, selectedRoute);
+            numUsers++;
+        }
+
+        System.out.println("Tickets booked successfully.");
+        System.out.println("Total amount deducted: " + totalAmount);
+        System.out.println("Happy Journey");
+        System.out.println("----------------------------------------");
+        System.out.println("Enter 'Y' to book another ticket or any other key to return to main menu:");
+        System.out.println("----------------------------------------");
+        String choice = scanner.nextLine();
+        continueBooking = choice.equalsIgnoreCase("Y");
+    }
+}
+
+    private void viewBookedTickets() {
+        System.out.println("----------------------------------------");
+        System.out.println("View booked tickets:");
+        System.out.println("----------------------------------------");
+
+        for (int i = 0; i < numUsers; i++) {
+            if (bookings[i] != null) {
+                Booking booking = bookings[i];
+                System.out.println("Passenger Name: " + booking.getPassengerName());
+                System.out.println("Passenger Age: " + booking.getPassengerAge());
+                System.out.println("Route: " + booking.getBusRoute().getOrigin() + " to " + booking.getBusRoute().getDestination());
+                System.out.println("Date of Journey: " + booking.getDateOfJourney());
+                System.out.println("Departure Time: " + booking.getBusRoute().getDepartureTime());
+                System.out.println("Arrival Time: " + booking.getBusRoute().getArrivalTime());
+                System.out.println("Seat Type: " + booking.getBusRoute().getSeatType());
+                System.out.println("Ticket Price: " + booking.getBusRoute().getTicketPrice());
+                System.out.println();
+            }
+            System.out.println("No bookings found");
+        }
+    }
+
+    private void cancelTicket(Scanner scanner) {
+        System.out.println("----------------------------------------");
+        System.out.println("Enter passenger name to cancel ticket:");
+        System.out.println("----------------------------------------");
+        String name = scanner.nextLine();
+
+        for (int i = 0; i < numUsers; i++) {
+            if (bookings[i] != null && bookings[i].getPassengerName().equals(name)) {
+                bookings[i] = null;
+                System.out.println("Ticket canceled successfully.");
+                return;
+            }
+        }
+
+        System.out.println("Ticket not found for passenger " + name + ".");
+    }
+}
